@@ -1,0 +1,18 @@
+{
+  "name": "Sysgen RPO - Loans Intelligence Suite",
+  "short_name": "Sysgen Loans",
+  "description": "Internal Loan Computations & Excel Intelligence Suite for Sysgen RPO",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#140d08",
+  "theme_color": "#f59e0b",
+  "icons": [
+    {
+      "src": "/sysgen_logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

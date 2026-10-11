@@ -1,0 +1,22 @@
+{
+  "name": "sysgen-rpo-loans-excel-reader",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "main": "main-electron.cjs",
+  "scripts": {
+    "dev": "vite --port 5173 --host",
+    "build": "vite build",
+    "preview": "vite preview",
+    "cli": "node cli-reader.js",
+    "app": "electron .",
+    "desktop": "electron ."
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "vite": "^5.4.14"
+  }
+}

@@ -1,0 +1,176 @@
+// Sample realistic data for Sysgen RPO Loans
+export function getSampleLoanWorkbookData() {
+  const headers = [
+    "Loan Account No",
+    "Borrower Name",
+    "Employee ID",
+    "Department / Station",
+    "Loan Type",
+    "Principal Amount",
+    "Interest Rate (%)",
+    "Term (Months)",
+    "Monthly Amortization",
+    "Outstanding Balance",
+    "Release Date",
+    "Maturity Date",
+    "Payment Status"
+  ];
+
+  const rows = [
+    [
+      "RPO-LN-2024-001",
+      "Juan Dela Cruz",
+      "EMP-1082",
+      "Field Operations",
+      "Salary Loan",
+      50000,
+      1.5,
+      12,
+      4916.67,
+      34416.69,
+      "2024-01-15",
+      "2025-01-15",
+      "Current / Active"
+    ],
+    [
+      "RPO-LN-2024-002",
+      "Maria Kristina Santos",
+      "EMP-1145",
+      "Accounting & Finance",
+      "Emergency Loan",
+      30000,
+      1.0,
+      6,
+      5300.00,
+      10600.00,
+      "2024-03-01",
+      "2024-09-01",
+      "Current / Active"
+    ],
+    [
+      "RPO-LN-2024-003",
+      "Rodrigo D. Reyes",
+      "EMP-0921",
+      "Logistics & Fleet",
+      "Calamity Loan",
+      40000,
+      1.2,
+      18,
+      2700.00,
+      24300.00,
+      "2024-02-10",
+      "2025-08-10",
+      "Current / Active"
+    ],
+    [
+      "RPO-LN-2024-004",
+      "Carmela Jane Bautista",
+      "EMP-1304",
+      "Human Resources",
+      "Educational Loan",
+      60000,
+      1.5,
+      24,
+      3400.00,
+      51000.00,
+      "2024-04-05",
+      "2026-04-05",
+      "Current / Active"
+    ],
+    [
+      "RPO-LN-2024-005",
+      "Eduardo Gabriel Ramos",
+      "EMP-0887",
+      "Maintenance & Engineering",
+      "Salary Loan",
+      80000,
+      2.0,
+      24,
+      4933.33,
+      19733.32,
+      "2023-08-20",
+      "2025-08-20",
+      "Current / Active"
+    ],
+    [
+      "RPO-LN-2024-006",
+      "Arlene Joy Mendoza",
+      "EMP-1420",
+      "Customer Relations",
+      "Appliance Loan",
+      25000,
+      1.8,
+      12,
+      2533.33,
+      5066.66,
+      "2023-11-12",
+      "2024-11-12",
+      "Near Maturity"
+    ],
+    [
+      "RPO-LN-2024-007",
+      "Mark Anthony Villanueva",
+      "EMP-1219",
+      "Field Operations",
+      "Emergency Loan",
+      15000,
+      1.0,
+      6,
+      2650.00,
+      0.00,
+      "2023-10-01",
+      "2024-04-01",
+      "Fully Paid"
+    ],
+    [
+      "RPO-LN-2024-008",
+      "Patricia Nicole Soriano",
+      "EMP-1502",
+      "IT Infrastructure",
+      "Salary Loan",
+      100000,
+      1.5,
+      36,
+      4277.78,
+      89833.38,
+      "2024-05-18",
+      "2027-05-18",
+      "Current / Active"
+    ],
+    [
+      "RPO-LN-2024-009",
+      "Danilo S. Fernandez",
+      "EMP-0764",
+      "Warehouse Support",
+      "Salary Loan",
+      45000,
+      1.8,
+      12,
+      4560.00,
+      13680.00,
+      "2024-01-25",
+      "2025-01-25",
+      "Past Due (1 Mo)"
+    ],
+    [
+      "RPO-LN-2024-010",
+      "Rowena Mae Garcia",
+      "EMP-1388",
+      "Procurement",
+      "Multi-Purpose Loan",
+      70000,
+      1.6,
+      24,
+      4036.67,
+      56513.38,
+      "2024-02-28",
+      "2026-02-28",
+      "Current / Active"
+    ]
+  ];
+
+  return {
+    sheetName: "RPO Active Loans",
+    data: [headers, ...rows]
+  };
+}
