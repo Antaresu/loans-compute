@@ -1,10 +1,13 @@
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
 using System.Threading;
-using System.Text;
+using System.Reflection;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace SysgenLoansApp
 {
@@ -13,44 +16,99 @@ namespace SysgenLoansApp
         private static HttpListener _listener;
         private static string _webRoot;
         private static int _port;
+        private static Mutex _singleInstanceMutex;
 
         [STAThread]
         static void Main(string[] args)
         {
+            bool isNewInstance;
+            _singleInstanceMutex = new Mutex(true, "SysgenRPOLoansAppSingleInstanceMutex", out isNewInstance);
+
+            _port = 48921;
+            string appUrl = "http://127.0.0.1:" + _port + "/";
+
+            if (!isNewInstance)
+            {
+                // App already running: just launch the window and bring to front
+                LaunchAppWindow(appUrl);
+                return;
+            }
+
             try
             {
                 string exeDir = AppDomain.CurrentDomain.BaseDirectory;
                 string distDir = Path.Combine(exeDir, "dist");
-                _webRoot = Directory.Exists(distDir) ? distDir : exeDir;
 
-                _port = GetAvailablePort(48921);
-
-                // Start local embedded static server
-                StartWebServer(_port, _webRoot);
-
-                string appUrl = "http://127.0.0.1:" + _port + "/";
-
-                // Launch Edge or Chrome in true Standalone App Window Mode
-                Process appProc = LaunchAppWindow(appUrl);
-
-                if (appProc != null)
+                if (Directory.Exists(distDir) && File.Exists(Path.Combine(distDir, "index.html")))
                 {
-                    appProc.WaitForExit();
+                    _webRoot = distDir;
+                }
+                else if (File.Exists(Path.Combine(exeDir, "index.html")))
+                {
+                    _webRoot = exeDir;
                 }
                 else
                 {
-                    // Fallback: open default browser
-                    Process.Start(new ProcessStartInfo(appUrl) { UseShellExecute = true });
-                    Thread.Sleep(5000);
+                    // Extract embedded web assets for 100% standalone USB portable execution
+                    string localAppWeb = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SysgenLoansApp", "web_v1");
+                    EnsureEmbeddedAssetsExtracted(localAppWeb);
+                    _webRoot = localAppWeb;
                 }
+
+                // Check port availability
+                _port = GetAvailablePort(48921);
+                appUrl = "http://127.0.0.1:" + _port + "/";
+
+                // Start embedded web server
+                StartWebServer(_port, _webRoot);
+
+                // Launch App Window
+                LaunchAppWindow(appUrl);
+
+                // System Tray Management
+                NotifyIcon tray = new NotifyIcon();
+                try
+                {
+                    string iconFile = Path.Combine(exeDir, "app_icon.ico");
+                    if (File.Exists(iconFile))
+                    {
+                        tray.Icon = new Icon(iconFile);
+                    }
+                    else
+                    {
+                        tray.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+                    }
+                }
+                catch
+                {
+                    tray.Icon = SystemIcons.Application;
+                }
+
+                tray.Text = "Sysgen RPO Loans Suite";
+                tray.Visible = true;
+
+                ContextMenu menu = new ContextMenu();
+                menu.MenuItems.Add("Open Workspace", (s, e) => LaunchAppWindow(appUrl));
+                menu.MenuItems.Add("-");
+                menu.MenuItems.Add("Exit Application", (s, e) => {
+                    tray.Visible = false;
+                    tray.Dispose();
+                    Application.Exit();
+                });
+
+                tray.ContextMenu = menu;
+                tray.DoubleClick += (s, e) => LaunchAppWindow(appUrl);
+
+                // Keep application alive
+                Application.Run();
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show(
+                MessageBox.Show(
                     "Error launching Sysgen RPO Loans App: " + ex.Message,
                     "Sysgen RPO Loans Error",
-                    System.Windows.Forms.MessageBoxButtons.OK,
-                    System.Windows.Forms.MessageBoxIcon.Error
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
                 );
             }
             finally
@@ -58,6 +116,43 @@ namespace SysgenLoansApp
                 if (_listener != null && _listener.IsListening)
                 {
                     try { _listener.Stop(); } catch { }
+                }
+                if (_singleInstanceMutex != null)
+                {
+                    try { _singleInstanceMutex.ReleaseMutex(); } catch { }
+                }
+            }
+        }
+
+        private static void EnsureEmbeddedAssetsExtracted(string targetDir)
+        {
+            if (Directory.Exists(targetDir) && File.Exists(Path.Combine(targetDir, "index.html")))
+            {
+                return;
+            }
+
+            Directory.CreateDirectory(targetDir);
+            var asm = Assembly.GetExecutingAssembly();
+            using (var stream = asm.GetManifestResourceStream("app_assets.zip"))
+            {
+                if (stream != null)
+                {
+                    using (var archive = new ZipArchive(stream))
+                    {
+                        foreach (var entry in archive.Entries)
+                        {
+                            string destPath = Path.Combine(targetDir, entry.FullName);
+                            if (string.IsNullOrEmpty(entry.Name))
+                            {
+                                Directory.CreateDirectory(destPath);
+                            }
+                            else
+                            {
+                                Directory.CreateDirectory(Path.GetDirectoryName(destPath));
+                                entry.ExtractToFile(destPath, true);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -119,7 +214,6 @@ namespace SysgenLoansApp
 
                 if (!File.Exists(filePath))
                 {
-                    // Fallback to index.html for SPA routing
                     filePath = Path.Combine(rootDir, "index.html");
                 }
 
@@ -170,26 +264,26 @@ namespace SysgenLoansApp
             }
         }
 
-        private static Process LaunchAppWindow(string url)
+        private static void LaunchAppWindow(string url)
         {
-            // Search for Microsoft Edge (Standard Chromium installed on Windows 10/11)
             string edgePath = FindBrowserExecutable("msedge.exe");
             if (!string.IsNullOrEmpty(edgePath))
             {
-                return StartBrowserProcess(edgePath, url);
+                StartBrowserProcess(edgePath, url);
+                return;
             }
 
-            // Search for Chrome
             string chromePath = FindBrowserExecutable("chrome.exe");
             if (!string.IsNullOrEmpty(chromePath))
             {
-                return StartBrowserProcess(chromePath, url);
+                StartBrowserProcess(chromePath, url);
+                return;
             }
 
-            return null;
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
 
-        private static Process StartBrowserProcess(string browserExe, string url)
+        private static void StartBrowserProcess(string browserExe, string url)
         {
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             string profileDir = Path.Combine(appData, "SysgenLoansAppProfile");
@@ -198,11 +292,10 @@ namespace SysgenLoansApp
             {
                 FileName = browserExe,
                 Arguments = "--app=\"" + url + "\" --window-size=1440,900 --user-data-dir=\"" + profileDir + "\"",
-                UseShellExecute = false,
-                CreateNoWindow = true
+                UseShellExecute = false
             };
 
-            return Process.Start(psi);
+            Process.Start(psi);
         }
 
         private static string FindBrowserExecutable(string exeName)
