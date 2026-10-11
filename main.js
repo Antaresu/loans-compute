@@ -2047,6 +2047,11 @@ if ('serviceWorker' in navigator) {
 }
 
 let deferredInstallPrompt = null;
+const installAppModal = document.getElementById('installAppModal');
+const btnInstallModalClose = document.getElementById('btnInstallModalClose');
+const btnInstallModalDone = document.getElementById('btnInstallModalDone');
+const btnTriggerPwaInstall = document.getElementById('btnTriggerPwaInstall');
+
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredInstallPrompt = e;
@@ -2054,18 +2059,47 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 if (btnInstallApp) {
-  btnInstallApp.addEventListener('click', async () => {
+  btnInstallApp.classList.remove('hidden'); // Keep visible so user can access options anytime!
+  btnInstallApp.addEventListener('click', () => {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+    } else {
+      if (installAppModal) installAppModal.classList.remove('hidden');
+    }
+  });
+}
+
+if (btnTriggerPwaInstall) {
+  btnTriggerPwaInstall.addEventListener('click', async () => {
     if (deferredInstallPrompt) {
       deferredInstallPrompt.prompt();
       const choice = await deferredInstallPrompt.userChoice;
       if (choice && choice.outcome === 'accepted') {
         showToast(state.lang === 'tl' ? 'Matagumpay na na-install ang Sysgen Loans App!' : 'Sysgen Loans App successfully installed!');
-        btnInstallApp.classList.add('hidden');
+        if (installAppModal) installAppModal.classList.add('hidden');
       }
       deferredInstallPrompt = null;
     } else {
-      showToast(state.lang === 'tl' ? 'Maaaring i-install sa pamamagitan ng browser menu (Install App)' : 'Install available via browser address bar or menu (Install App)');
+      showToast(state.lang === 'tl' ? 'I-click ang 💻 icon sa dulo ng address bar sa itaas.' : 'Click the 💻 icon at the end of the address bar above.');
     }
+  });
+}
+
+if (btnInstallModalClose) {
+  btnInstallModalClose.addEventListener('click', () => {
+    if (installAppModal) installAppModal.classList.add('hidden');
+  });
+}
+
+if (btnInstallModalDone) {
+  btnInstallModalDone.addEventListener('click', () => {
+    if (installAppModal) installAppModal.classList.add('hidden');
+  });
+}
+
+if (installAppModal) {
+  installAppModal.addEventListener('click', (e) => {
+    if (e.target === installAppModal) installAppModal.classList.add('hidden');
   });
 }
 

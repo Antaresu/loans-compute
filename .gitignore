@@ -6,6 +6,7 @@ dist/
 
 # System and logs
 *.log
+*.zip
 .DS_Store
 Thumbs.db
 .tempmediaStorage/

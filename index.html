@@ -586,6 +586,52 @@
       </div>
     </div>
 
+    <!-- App Installation & Download Modal -->
+    <div class="modal-backdrop hidden" id="installAppModal">
+      <div class="modal-container install-modal-box">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <span class="modal-badge" id="txtModalInstallBadge">Desktop Application</span>
+            <h3 id="txtModalInstallTitle">Download &amp; Install Sysgen RPO Loans App</h3>
+          </div>
+          <button id="btnInstallModalClose" class="btn-icon">✕</button>
+        </div>
+        <div class="modal-body install-modal-body">
+          <div class="install-card-grid">
+            
+            <!-- Option 1: Native Windows PWA Install -->
+            <div class="install-option-card">
+              <div class="install-option-icon">💻</div>
+              <h4 id="txtInstallOption1Title">1-Click Desktop Browser Install</h4>
+              <p id="txtInstallOption1Desc">I-install nang direkta bilang standalone Windows desktop app mula sa Chrome o Edge nang walang address bar.</p>
+              <button id="btnTriggerPwaInstall" class="btn btn-primary btn-sm">I-install Ngayon (PWA)</button>
+              <small id="txtInstallOption1Tip">O i-click ang icon sa dulong kanan ng address bar sa Chrome/Edge.</small>
+            </div>
+
+            <!-- Option 2: Desktop Shortcut -->
+            <div class="install-option-card highlighted">
+              <div class="install-option-icon">⚡</div>
+              <h4 id="txtInstallOption2Title">Windows Desktop Icon (.lnk)</h4>
+              <p id="txtInstallOption2Desc">Nagawa na ang direktang shortcut sa iyong Desktop screen! I-double click lamang ang <strong>"Sysgen RPO Loans"</strong> icon sa iyong Windows Desktop.</p>
+              <span class="badge badge-green" id="txtInstallOption2Badge">Naka-ready na sa Desktop mo</span>
+            </div>
+
+            <!-- Option 3: Offline Package ZIP -->
+            <div class="install-option-card">
+              <div class="install-option-icon">📦</div>
+              <h4 id="txtInstallOption3Title">Download Offline Package (.zip)</h4>
+              <p id="txtInstallOption3Desc">I-download ang buong production build kasama ang 1-click launcher para magamit sa kahit anong computer offline.</p>
+              <a href="/Sysgen-RPO-Loans-Desktop-Package.zip" download="Sysgen-RPO-Loans-Desktop-Package.zip" class="btn btn-secondary btn-sm" id="btnDownloadZipPackage">I-download ang Package (.zip)</a>
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btnInstallModalDone" class="btn btn-primary btn-sm">Naiintindihan ko / Done</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toastContainer"></div>
 
